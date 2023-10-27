@@ -1,0 +1,11 @@
+# Latex stuff
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# References (i.e. papers that I cannot upload because of copyright)
+references/
