@@ -1,0 +1,178 @@
+\documentclass{nmlreport}
+
+\reportnumber{TR-05-2023}
+\reporttitle{A HILL-TYPE CONTINUUM MODEL OF A MUSCLE FIBRE}
+\authoredby{Javier Almonacid}
+\dateauthored{\today}
+\revisedby{Nilima Nigam, James Wakeling}
+\daterevised{}
+\approvedby{}
+\dateapproved{}
+
+\makeatletter
+\renewcommand\chapter{\if@openright\cleardoublepage\else\clearpage\fi
+                    \thispagestyle{fancy}% original style: plain
+                    \global\@topnum\z@
+                    \@afterindentfalse
+                    \secdef\@chapter\@schapter}
+\makeatother
+
+\newcommand{\lhat}{\widehat{\lambda}}
+\newcommand{\ehat}{\widehat{\epsilon}}
+
+
+\begin{document}
+\maketitle
+
+\chapter{Executive Summary}
+\setlength{\parskip}{0.5em}
+
+TBD
+
+
+%--------------------------------------------
+\cleardoublepage
+\setlength{\parskip}{0pt}
+{\hypersetup{linkcolor={black!50!black}}
+
+
+\tableofcontents 
+
+%\cleardoublepage
+%\addcontentsline{toc}{chapter}{List of Figures}
+%\listoffigures 
+
+%\cleardoublepage
+%\addcontentsline{toc}{chapter}{List of Tables} 
+%\listoftables
+
+%------------------------------------
+
+\chapter{Mathematical ideas}
+\setlength{\parskip}{1em}
+
+Consider the mass-enhanced muscle model from Ross \& Wakeling 2016 \cite{RossWakeling2016} driven by an external force $F_{ext}$ applied on the last mass. Mathematically, it can be described as a system of $N$ ODEs as follows:
+\begin{equation} \label{eq:system_1}
+	\left\{ 
+		\begin{aligned}
+			m_1 \dfrac{d^2 x_1}{dt^2} &= F_2(\lambda_2,\epsilon_2) - F_1(\lambda_1,\epsilon_1), \\
+			m_2 \dfrac{d^2 x_2}{dt^2} &= F_3(\lambda_3,\epsilon_3) - F_2(\lambda_2,\epsilon_2), \\
+			&\hspace{0.5em} \vdots \\
+			m_N \dfrac{d^2 x_N}{dt^2} &= F_{ext} - F_N(\lambda_3,\epsilon_3).
+		\end{aligned} 
+	\right.
+\end{equation}
+
+Denoting by $x_i$ the position of the $i$-th mass, the stretch (normalized length) and strain rate (normalized velocity) can be written as
+\begin{equation} \label{eq:stretch_strain_rate_ode}
+	\lambda_i = \dfrac{x_i - x_{i-1}}{L/N}, \quad \epsilon_i = \dfrac{\dot{\lambda}_i}{\epsilon_0} = \dfrac{\dot{x}_i - \dot{x}_{i-1}}{\epsilon_0 L / N}, \quad i = 1,\dots,N
+\end{equation}
+where $L$ denotes the length of the muscle (which could be taken as the optimal length) and $\epsilon_0$ is the maximum strain rate of the muscle fibre. In addition, $x_0 = 0$. Typically, the spacing between masses is considered constant. Call it $\Delta x$. We have therefore $\Delta x = L/N$. Moreover, writing these quantities in terms of displacements $u_i$, where $x_i = x_i^0 + u_i$ and $x_i^0$ is the initial position of the $i$-th mass, we have the following:
+\begin{equation}
+	\lambda_i = \dfrac{x_i - x_{i-1}}{\Delta x} = \dfrac{u_i + x_i^0 - u_{i-1} - x_{i-1}^0}{\Delta x} = 1 + \dfrac{u_i - u_{i-1}}{\Delta x},
+\end{equation}
+the latter because $x_i^0 - x_{i-1}^0 = \Delta x$. Moreover,
+\begin{equation}
+	\epsilon_i = \dfrac{\dot{x}_i - \dot{x}_{i-1}}{\epsilon_0 \Delta x} = \dfrac{1}{\epsilon_0} \dfrac{d}{dt}\left( \dfrac{u_i - u_{i-1}}{\Delta x} \right) = \dfrac{1}{\epsilon_0} \dfrac{d}{dt}\left(1 + \dfrac{u_i - u_{i-1}}{\Delta x} \right).
+\end{equation}
+
+We are interested in studying the behaviour of the system as $N \to \infty$, or equivalently, as $\Delta x \to 0$. This is the \textbf{continuum limit}. It turns out that, as $\Delta x \to 0$, the previous two equations define the following quantities:
+\begin{equation}
+	\lambda := \lim_{\Delta x \to 0} \lambda_i = 1 + \dfrac{\partial u}{\partial x}, \quad \epsilon := \lim_{\Delta x \to 0} \epsilon_i = \dfrac{1}{\epsilon_0} \dfrac{\partial \lambda}{\partial t}.
+\end{equation}
+That is, we have recovered the one-dimensional version of the stretch and strain rate variables that are commonly considered in solid mechanics. 
+
+Going back to the system \eqref{eq:system_1}, it is customary to consider $m_i = m/N$, where $m$ is the mass of the whole muscle. This means that, $m_i = m \, \Delta x / L$. Also, because $F_i = F(\lambda_i,\epsilon_i)$ where $F$ is Hill's force, we may rewrite \eqref{eq:system_1} as
+\begin{equation} \label{eq:system_2}
+	\left\{ 
+		\begin{aligned}
+			\dfrac{m}{L} \dfrac{d^2 x_1}{dt^2} &= \dfrac{F(\lambda_2,\epsilon_2) - F(\lambda_1,\epsilon_1)}{\Delta x}, \\
+			\dfrac{m}{L} \dfrac{d^2 x_2}{dt^2} &= \dfrac{F(\lambda_3,\epsilon_3) - F(\lambda_2,\epsilon_2)}{\Delta x}, \\
+			&\hspace{0.5em} \vdots \\
+			\dfrac{m}{L} \dfrac{d^2 x_N}{dt^2} &= \dfrac{F_{ext} - F(\lambda_N,\epsilon_N)}{\Delta x}.
+		\end{aligned} 
+	\right.
+\end{equation}
+
+\begin{claim}
+	The system of ODEs \eqref{eq:system_1} corresponds to a first-order method of lines discretization of the partial differential equation
+	\begin{equation} \label{eq:pde}
+		\rho_0 \dfrac{\partial^2 u(x,t)}{\partial t^2} = \dfrac{\partial F(\lambda,\epsilon)}{\partial x}, \quad (x,t) \in (0,L) \times (0,\infty),
+	\end{equation}
+	subject to mixed boundary conditions
+	\begin{equation} \label{eq:bc}
+		u(0,t) = 0, \quad F(\lambda,\epsilon)\big|_{x=L} = F_{ext},
+	\end{equation}
+	and initial conditions
+	\begin{equation}
+		u(x,0) = \dfrac{\partial u(x,0)}{\partial t} = 0.
+	\end{equation}
+	Here, $\rho_0$ would be the \textbf{linear density} of muscle tissue, which can be computed from the volumetric muscle density $\rho_0^V$ as $\rho_0 = \rho_0^V \cdot CSA$.
+\end{claim}
+
+Note that the Neumann condition in \eqref{eq:bc} corresponds to a nonlinear type of boundary condition depending on $\frac{\partial u}{\partial x}$. Thus, the problem is at least well-defined (whether it is \textit{well-posed} is a different story). A more common Neumann boundary condition for this problem (but perhaps not applicable to muscle, see footnote) is to prescribe a strain at the end, that is,
+\[
+	\dfrac{\partial u}{\partial x}\Big|_{x=L} = \dfrac{\sigma_{ext}}{E}.
+\]
+where $\sigma_{ext}$ is an external stress and $E$ is the Young's modulus of the material\footnote{Ogneva et al. \cite{OgnevaEtAl2010} reports values of $E \approx 30$ kPa for a muscle fibre in a relaxed state and $E \approx 66$ kPa in a fully-active state for rat soleus muscle. These measurements were performed at the M bands, which differ from measurements at Z bands.}.
+
+\begin{proof}
+	Indeed, consider a discretization $\{x_0,x_1,\dots,x_N\}$ of the interval $[0,L]$ where $x_0 = 0$ and $x_N = L$. Then, define $u_i = u(x_i,t)$, and consider a \textit{backwards} first-order formula to discretize (in space) the stretch and strain rates, that is,
+	\[
+		\lambda_i = \lambda(x_i,t) = 1 + \dfrac{u_i - u_{i-1}}{\Delta x}, \quad \epsilon_i = \epsilon(x_i,t) = \dfrac{1}{\epsilon_0} \dfrac{d\lambda_i}{dt}.
+	\]
+	These are precisely the equations in \eqref{eq:stretch_strain_rate_ode}. Now, to discretize the gradient on the right-hand side of \eqref{eq:pde}, consider a \textit{forwards} first-order difference:
+	\[
+		\dfrac{m}{L} \dfrac{d^2 u_i}{dt^2} = \dfrac{F(\lambda_{i+1},\epsilon_{i+1}) - F(\lambda_i,\epsilon_{i+1})}{\Delta x}, \quad i = 1,\dots,N.
+	\]
+	Given that there is not an $x_{N+1}$ mass, the force required at this ``ghost'' node can be taken precisely as $F_{ext}$, i.e. $F(\lambda_{N+1},\epsilon_{N+1}) = F_{ext}$. In addition, we have taken $\rho_0 = m/L$. Thus, the previous expression is just \eqref{eq:system_2}.
+\end{proof}
+
+
+\begin{remark}
+	Mathematically speaking, $F$ only needs to be a ``nice'' (i.e. at least continuous) function, not necessarily Hill's force. However, if $F$ is indeed Hill's force, then I conjecture that the equation \eqref{eq:pde} corresponds to the deformation of a muscle fibre in which every point inside is subjected to Hill's force. 
+\end{remark}
+
+\begin{remark}
+	The continuum limit may seem excessive at first, but we have to keep in mind that $N$, the number of masses in the ODE system, will never reach the number of sarcomeres in a muscle fibre. For instance, we may well have between 20,000 to 25,000 sarcomeres per 10 cm of muscle fibre. For a muscle that is 30 cm long, we are currently taking $N=16$ masses.
+\end{remark}
+
+One advantage of the PDE \eqref{eq:pde} is that it is easy to add, say a Neo-Hookean contribution:
+\[
+	\rho_0 \dfrac{\partial^2 u }{\partial t^2} = \dfrac{\partial}{\partial x} F(\lambda,\epsilon) + \dfrac{\partial}{\partial x} \left( c_1 \lambda + \dfrac{c_1 \log(\lambda) + c_2}{\lambda} \right),
+\]
+where $c_1,c_2>0$ are the Lam\'{e} coefficients of the material (these are typically denoted by $\lambda$ and $\mu$, but we have not used this notation here for obvious reasons).
+
+It remains to propose a method to evaluate the descending limb instability in the model \eqref{eq:pde}, if it is present at all.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%	THE BIBLIOGRAPHY
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{thebibliography}{99} % Use MathSciNet style (or any other, just be consistent)
+\addcontentsline{toc}{chapter}{Bibliography}
+\markboth{Bibliography}{Bibliography}
+
+\bibitem{RossWakeling2016}{
+{\sc S. A. Ross \& J. M. Wakeling}. 
+{Muscle shortening velocity depends on tissue inertia and level of activation during submaximal contractions.}
+Biol. Lett. 12 (2016), 20151041.
+}
+
+\bibitem{OgnevaEtAl2010}{
+	{\sc I. V. Ogneva, D. V. Lebedev \& B. S. Shenkman}.
+	{Transversal stiffness and Young's modulus of single fibers from rat soleus muscle probed by atomic force microscopy.}
+	Biophysical Journal 98 (2010), 418--424.
+}
+
+\end{thebibliography}
+
+
+
+
+
+\end{document}
